@@ -87,9 +87,6 @@ classification.
 
 ## Notes
 
-**Paper mismatch:** the text says 10 allowed features. The original code uses
-15 for regression and 5 for classification; this code keeps those counts.
-
 Adapted from `src/unit_weyl/` and `scripts/` in the original repository.
 The seed labels in `data.py` preserve the original random draws.
 Tested with Python 3.14.2 and the packages in `requirements.txt`.
