@@ -20,14 +20,28 @@ def allowed(U, exponents, v):
 
 
 def dictionary(task, wrong_count=250):
-    """Return U, v, and feature exponents, with allowed features first.
+    """Return U, v, and feature exponents, with ten allowed features first.
 
+    Regression uses F0 * Re**k * q**j, k=-2,...,2 and j=0,1,
+    where F0=rho*V**2*A and q=A/ell**2.
+    Classification uses Re**k, k=-4,...,5, where Re=rho*V*ell/mu.
     wrong_count is the number of added features whose units do not match v.
     """
-    U, v = (DRAG_U, FORCE_V) if task == "regression" else (CLASS_U, np.zeros(3, dtype=int))
+    if task == "regression":
+        U, v = DRAG_U, FORCE_V
+        force = np.array([1, 0, 2, 1, 0])
+        reynolds = np.array([1, -1, 1, 0, 1])
+        area_ratio = np.array([0, 0, 0, 1, -2])
+        correct = np.array([force + k*reynolds + j*area_ratio
+                            for k in range(-2, 3) for j in (0, 1)])
+    elif task == "classification":
+        U, v = CLASS_U, np.zeros(3, dtype=int)
+        reynolds = np.array([1, -1, 1, 1])
+        correct = np.array([k*reynolds for k in range(-4, 6)])
+    else:
+        raise ValueError("task must be regression or classification")
     candidates = np.array(list(product(range(-2, 4), repeat=U.shape[1])))
     mask = allowed(U, candidates, v)
-    correct = candidates[mask]
     wrong = np.unique(candidates[~mask & (np.abs(candidates).sum(axis=1) <= 6)], axis=0)
     wrong = wrong[np.random.default_rng(1729).permutation(len(wrong))]
     if not 0 <= wrong_count <= len(wrong):

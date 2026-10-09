@@ -34,7 +34,7 @@ Add `--quick` for a small test, `--seeds 1` for one seed, or `--output PATH`
 to choose where results go. For example, `compare-methods` saves to
 `results/compare-methods`; its quick run saves to `results/compare-methods_quick`.
 These paths are inside `unit_rescaling_group/` when using the commands above.
-Quick runs check the code with less data; use full runs for the paper tables.
+Quick runs check the code with less data; full runs generate the complete results.
 
 ## Methods
 
@@ -49,6 +49,15 @@ for classification. The name “Invariant regression” follows the paper;
 its force predictions scale with the output units.
 For classification, projections and averaging act on logits before converting
 them to probabilities.
+
+Each task uses exactly 10 allowed features. With `Re=rho*V*ell/mu`,
+`q=A/ell**2`, and `F0=rho*V**2*A`, they are:
+
+- Regression: `F0 * Re**k * q**j`, for `k=-2,-1,0,1,2` and `j=0,1`.
+- Classification: `Re**k`, for `k=-4,-3,...,5`.
+
+These sets can represent the true force and classification logit. The paper's
+table values have not been regenerated with these feature sets.
 
 Training uses fixed units or random unit factors between 0.1 and 10.
 Tests also include larger shifts, with factors between 0.01 and 100.
@@ -90,6 +99,3 @@ classification.
 Adapted from `src/unit_weyl/` and `scripts/` in the original repository.
 The seed labels in `data.py` preserve the original random draws.
 Tested with Python 3.14.2 and the packages in `requirements.txt`.
-The full method comparison and numerical projection check reproduced
-Tables 2 and 6. One full seed of the training-size grid was also checked
-against the original results, within `1e-10` relative error.
